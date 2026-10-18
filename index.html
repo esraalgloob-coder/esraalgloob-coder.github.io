@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="مكتبة إلكترونية لتحميل الكتب والمراجع الدراسية">
+<title>مكتبة الطالب | مكتبة إلكترونية</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#172033;--muted:#6b7280;--primary:#3157d5;--primary2:#6d5ce8;--line:#e7ebf3;--shadow:0 12px 35px rgba(31,48,95,.08)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Tahoma,Arial,sans-serif;color:var(--ink)}
+.topbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.topinner{max-width:1150px;margin:auto;padding:15px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:21px}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--primary2));display:grid;place-items:center;color:white;font-size:23px}
+.badge{font-size:12px;background:#edf2ff;color:#3157d5;padding:7px 10px;border-radius:30px}
+.hero{background:linear-gradient(120deg,#182b69,#3157d5 58%,#8067ee);color:#fff;padding:45px 22px 70px}
+.heroinner{max-width:1100px;margin:auto}.eyebrow{opacity:.8;font-size:13px;letter-spacing:.3px}.hero h1{font-size:clamp(28px,5vw,44px);margin:13px 0}.hero p{max-width:650px;line-height:1.9;color:#e5eaff;margin:0 0 23px}
+.searchbox{display:flex;max-width:680px;background:white;border-radius:15px;padding:6px;box-shadow:0 10px 25px #101c4933}.searchbox input{flex:1;min-width:0;border:0;outline:0;padding:13px;font:inherit;color:#222}.searchbox span{padding:12px;color:#65708a}
+main{max-width:1100px;margin:-35px auto 50px;padding:0 22px;position:relative}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}.stat{background:#fff;border:1px solid var(--line);border-radius:17px;padding:18px;box-shadow:var(--shadow);display:flex;align-items:center;gap:13px}.staticon{width:45px;height:45px;display:grid;place-items:center;background:#edf2ff;border-radius:13px;font-size:22px}.stat strong{display:block;font-size:21px}.stat small{color:var(--muted)}
+.sectionhead{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:28px 0 16px}.sectionhead h2{margin:0;font-size:23px}.sectionhead p{margin:7px 0 0;color:var(--muted);font-size:13px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}.filter{border:1px solid var(--line);background:#fff;color:#4b5563;padding:10px 15px;border-radius:30px;font:inherit;cursor:pointer}.filter.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}.book{background:var(--card);border:1px solid var(--line);border-radius:19px;padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:255px;transition:.2s}.book:hover{transform:translateY(-3px);box-shadow:0 15px 35px #1f305f16}.booktop{display:flex;align-items:start;justify-content:space-between;gap:10px}.cover{width:55px;height:65px;border-radius:10px;background:linear-gradient(145deg,#e8edff,#d8e1ff);display:grid;place-items:center;font-size:28px;flex-shrink:0}.tag{font-size:11px;background:#eefbf3;color:#16824a;border-radius:30px;padding:6px 9px}.book h3{font-size:17px;margin:17px 0 8px}.book p{color:var(--muted);font-size:13px;line-height:1.8;margin:0 0 14px}.meta{font-size:12px;color:#7b8497;margin-top:auto;padding:10px 0}.download{display:block;text-align:center;text-decoration:none;background:var(--primary);color:#fff;border-radius:11px;padding:12px;font-weight:700;font-size:14px}.download:hover{background:#2345b8}.download.disabled{background:#a8afbf;cursor:not-allowed}.empty{display:none;text-align:center;padding:40px;background:#fff;border-radius:18px;color:var(--muted)}
+footer{text-align:center;padding:25px 20px;color:#7b8497;font-size:12px;border-top:1px solid var(--line);line-height:1.9}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.topinner{padding:12px 15px}.brand{font-size:17px}.badge{display:none}.hero{padding:34px 16px 62px}main{padding:0 14px}.stats{gap:8px}.stat{padding:12px 9px;gap:8px}.staticon{width:35px;height:35px;font-size:18px}.stat strong{font-size:17px}.stat small{font-size:10px}.grid{grid-template-columns:1fr}.book{min-height:0}.sectionhead h2{font-size:20px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topinner">
+    <div class="brand"><div class="logo">📚</div><span>مكتبة الطالب</span></div>
+    <span class="badge">مكتبتك الدراسية في مكان واحد</span>
+  </div>
+</header>
+<section class="hero">
+  <div class="heroinner">
+    <div class="eyebrow">المعرفة تبدأ من هنا</div>
+    <h1>كل كتبك الدراسية، أقرب إليك</h1>
+    <p>تصفح الكتب والمراجع حسب التخصص، وابحث عن الكتاب الذي تحتاجه ثم اضغط على زر التحميل لحفظه على جهازك.</p>
+    <label class="searchbox"><span>⌕</span><input id="search" type="search" placeholder="ابحث باسم الكتاب أو المادة أو التخصص..." aria-label="ابحث عن كتاب"></label>
+  </div>
+</section>
+<main>
+  <section class="stats">
+    <div class="stat"><div class="staticon">📘</div><div><strong id="bookCount">6</strong><small>كتاب في المكتبة</small></div></div>
+    <div class="stat"><div class="staticon">🗂️</div><div><strong id="categoryCount">4</strong><small>تخصصات ومواد</small></div></div>
+    <div class="stat"><div class="staticon">⬇️</div><div><strong>PDF</strong><small>ملفات سهلة القراءة</small></div></div>
+  </section>
+  <div class="sectionhead"><div><h2>📚 الكتب المتاحة</h2><p>اختر كتابًا واضغط تحميل لحفظه على جهازك.</p></div></div>
+  <div class="filters" id="filters">
+    <button class="filter active" data-category="الكل">الكل</button>
+    <button class="filter" data-category="تقنية المعلومات">تقنية المعلومات</button>
+    <button class="filter" data-category="الرياضيات">الرياضيات</button>
+    <button class="filter" data-category="العلوم">العلوم</button>
+    <button class="filter" data-category="اللغة العربية">اللغة العربية</button>
+  </div>
+  <section class="grid" id="books">
+    <!-- لتغيير كتاب: عدّل الاسم والوصف والتخصص واسم ملف PDF داخل href. -->
+    <article class="book" data-category="تقنية المعلومات" data-search="مدخل إلى الحاسوب تقنية المعلومات حاسوب"><div class="booktop"><div class="cover">💻</div><span class="tag">تقنية المعلومات</span></div><h3>المحاضره 1 ادارة معالجة الاعمال</h3><p>كتاب تمهيدي للتعرف على مكونات الحاسوب ومبادئ استخدامه.</p><div class="meta">PDF · ملف دراسي</div><a class="download" href="books/first.pptx" download>⬇ تحميل الكتاب</a></article>
+    <article class="book" data-category="تقنية المعلومات" data-search="أساسيات البرمجة برمجة تقنية المعلومات"><div class="booktop"><div class="cover">🧑‍💻</div><span class="tag">تقنية المعلومات</span></div><h3>أساسيات البرمجة</h3><p>مقدمة مبسطة في التفكير المنطقي والخوارزميات ومفاهيم البرمجة.</p><div class="meta">PDF · ملف دراسي</div><a class="download" href="books/programming-basics.pdf" download>⬇ تحميل الكتاب</a></article>
+    <article class="book" data-category="الرياضيات" data-search="الرياضيات الأساسية حساب جبر"><div class="booktop"><div class="cover">📐</div><span class="tag">الرياضيات</span></div><h3>الرياضيات الأساسية</h3><p>مراجعة للمفاهيم الحسابية والجبرية الأساسية.</p><div class="meta">PDF · ملف دراسي</div><a class="download" href="books/basic-math.pdf" download>⬇ تحميل الكتاب</a></article>
+    <article class="book" data-category="العلوم" data-search="مبادئ العلوم علوم"><div class="booktop"><div class="cover">🔬</div><span class="tag">العلوم</span></div><h3>مبادئ العلوم</h3><p>مادة تعريفية بمفاهيم علمية أساسية وتطبيقاتها.</p><div class="meta">PDF · ملف دراسي</div><a class="download" href="books/science-basics.pdf" download>⬇ تحميل الكتاب</a></article>
+    <article class="book" data-category="اللغة العربية" data-search="مهارات اللغة العربية قواعد كتابة"><div class="booktop"><div class="cover">📝</div><span class="tag">اللغة العربية</span></div><h3>مهارات اللغة العربية</h3><p>مراجعة في القراءة والكتابة والقواعد اللغوية.</p><div class="meta">PDF · ملف دراسي</div><a class="download" href="books/arabic-skills.pdf" download>⬇ تحميل الكتاب</a></article>
+    <article class="book" data-category="تقنية المعلومات" data-search="أساسيات الإنترنت شبكات إنترنت"><div class="booktop"><div class="cover">🌐</div><span class="tag">تقنية المعلومات</span></div><h3>أساسيات الإنترنت</h3><p>شرح للمفاهيم الأساسية للإنترنت والشبكات والخدمات الرقمية.</p><div class="meta">PDF · ملف دراسي</div><a class="download" href="books/internet-basics.pdf" download>⬇ تحميل الكتاب</a></article>
+  </section>
+  <div class="empty" id="empty">لا توجد كتب تطابق البحث. جرّب كلمة أخرى.</div>
+</main>
+<footer>مكتبة الطالب الإلكترونية · تُنشر هذه الصفحة عبر GitHub Pages.<br>أضف الكتب التي تملك حق توزيعها أو التي يتيح أصحابها تنزيلها.</footer>
+<script>
+const search=document.getElementById('search');
+const cards=[...document.querySelectorAll('.book')];
+const filters=[...document.querySelectorAll('.filter')];
+let category='الكل';
+function update(){
+ const q=search.value.trim().toLowerCase();let shown=0;
+ cards.forEach(card=>{
+  const matchCategory=category==='الكل'||card.dataset.category===category;
+  const matchText=(card.dataset.search+' '+card.innerText).toLowerCase().includes(q);
+  const visible=matchCategory&&matchText;card.style.display=visible?'flex':'none';if(visible)shown++;
+ });
+ document.getElementById('empty').style.display=shown?'none':'block';
+ document.getElementById('bookCount').textContent=cards.length;
+ document.getElementById('categoryCount').textContent=new Set(cards.map(c=>c.dataset.category)).size;
+}
+search.addEventListener('input',update);
+filters.forEach(btn=>btn.addEventListener('click',()=>{filters.forEach(b=>b.classList.remove('active'));btn.classList.add('active');category=btn.dataset.category;update()}));
+update();
+</script>
+</body>
+</html>
