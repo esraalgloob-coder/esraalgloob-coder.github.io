@@ -22,7 +22,8 @@ main{max-width:1100px;margin:-35px auto 50px;padding:0 22px;position:relative}.s
 footer{text-align:center;padding:25px 20px;color:#7b8497;font-size:12px;border-top:1px solid var(--line);line-height:1.9}
 @media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.topinner{padding:12px 15px}.brand{font-size:17px}.badge{display:none}.hero{padding:34px 16px 62px}main{padding:0 14px}.stats{gap:8px}.stat{padding:12px 9px;gap:8px}.staticon{width:35px;height:35px;font-size:18px}.stat strong{font-size:17px}.stat small{font-size:10px}.grid{grid-template-columns:1fr}.book{min-height:0}.sectionhead h2{font-size:20px}}
-</style>
+.meta{color:blue;}
+  </style>
 </head>
 <body>
 <header class="topbar">
@@ -33,10 +34,9 @@ footer{text-align:center;padding:25px 20px;color:#7b8497;font-size:12px;border-t
 </header>
 <section class="hero">
   <div class="heroinner">
-    <div class="eyebrow">المعرفة تبدأ من هنا</div>
-    <h1>كل كتبك الدراسية، أقرب إليك</h1>
-    <p>تصفح الكتب والمراجع حسب التخصص، وابحث عن الكتاب الذي تحتاجه ثم اضغط على زر التحميل لحفظه على جهازك.</p>
-    <label class="searchbox"><span>⌕</span><input id="search" type="search" placeholder="ابحث باسم الكتاب أو المادة أو التخصص..." aria-label="ابحث عن كتاب"></label>
+     <h1> نظم المعلومات الإدارية</h1>
+    <p>هذا الموقع مخصص لطلاب كلية الأبيض للعلوم والتقانة بكلاريوس نظم المعلومات الإدارية لتحميل المحاضرات </p>
+   <label class="searchbox"><span>⌕</span><input id="search" type="search" placeholder="البحث عن كتاب..." aria-label="ابحث عن كتاب"></label>
   </div>
 </section>
 <main>
@@ -48,23 +48,19 @@ footer{text-align:center;padding:25px 20px;color:#7b8497;font-size:12px;border-t
   <div class="sectionhead"><div><h2>📚 الكتب المتاحة</h2><p>اختر كتابًا واضغط تحميل لحفظه على جهازك.</p></div></div>
   <div class="filters" id="filters">
     <button class="filter active" data-category="الكل">الكل</button>
-    <button class="filter" data-category=" نظم المعلومات الإدارية">نظم المعلومات الإدارية</button>
-    <button class="filter" data-category="الرياضيات">الرياضيات</button>
-    <button class="filter" data-category="العلوم">العلوم</button>
-    <button class="filter" data-category="اللغة العربية">اللغة العربية</button>
+    <button class="filter" data-category=" ادارة معالجة الأعمال">ادارة معالجة الأعمال</button>
+    <button class="filter" data-category="تنقيب البيانات">تنقيب البيانات</button>
+    
   </div>
   <section class="grid" id="books">
     <!-- لتغيير كتاب: عدّل الاسم والوصف والتخصص واسم ملف PDF داخل href. -->
-    <article class="book" data-category=" نظم المعلومات الإدارية" data-search="مدخل إلى الحاسوب تقنية المعلومات حاسوب"><div class="booktop"><div class="cover">💻</div><span class="tag">نظم المعلومات الإدارية</span></div><h3>المحاضره 1 ادارة معالجة الاعمال</h3><p>كتاب تمهيدي للتعرف على ادارة سير الأعمال في المؤسسات ومبادئ استخدامه.</p><div class="meta">إدارة معالجة الأعمال 1</div><a class="download" href="books/first.pptx" download>⬇ تحميل الكتاب</a></article>
-    <article class="book" data-category="تقنية المعلومات" data-search="أساسيات البرمجة برمجة تقنية المعلومات"><div class="booktop"><div class="cover">🧑‍💻</div><span class="tag">تقنية المعلومات</span></div><h3>أساسيات البرمجة</h3><p>مقدمة مبسطة في التفكير المنطقي والخوارزميات ومفاهيم البرمجة.</p><div class="meta">PDF · ملف دراسي</div><a class="download" href="books/programming-basics.pdf" download>⬇ تحميل الكتاب</a></article>
-    <article class="book" data-category="الرياضيات" data-search="الرياضيات الأساسية حساب جبر"><div class="booktop"><div class="cover">📐</div><span class="tag">الرياضيات</span></div><h3>الرياضيات الأساسية</h3><p>مراجعة للمفاهيم الحسابية والجبرية الأساسية.</p><div class="meta">PDF · ملف دراسي</div><a class="download" href="books/basic-math.pdf" download>⬇ تحميل الكتاب</a></article>
-    <article class="book" data-category="العلوم" data-search="مبادئ العلوم علوم"><div class="booktop"><div class="cover">🔬</div><span class="tag">العلوم</span></div><h3>مبادئ العلوم</h3><p>مادة تعريفية بمفاهيم علمية أساسية وتطبيقاتها.</p><div class="meta">PDF · ملف دراسي</div><a class="download" href="books/science-basics.pdf" download>⬇ تحميل الكتاب</a></article>
-    <article class="book" data-category="اللغة العربية" data-search="مهارات اللغة العربية قواعد كتابة"><div class="booktop"><div class="cover">📝</div><span class="tag">اللغة العربية</span></div><h3>مهارات اللغة العربية</h3><p>مراجعة في القراءة والكتابة والقواعد اللغوية.</p><div class="meta">PDF · ملف دراسي</div><a class="download" href="books/arabic-skills.pdf" download>⬇ تحميل الكتاب</a></article>
-    <article class="book" data-category="تقنية المعلومات" data-search="أساسيات الإنترنت شبكات إنترنت"><div class="booktop"><div class="cover">🌐</div><span class="tag">تقنية المعلومات</span></div><h3>أساسيات الإنترنت</h3><p>شرح للمفاهيم الأساسية للإنترنت والشبكات والخدمات الرقمية.</p><div class="meta">PDF · ملف دراسي</div><a class="download" href="books/internet-basics.pdf" download>⬇ تحميل الكتاب</a></article>
+    <article class="book" data-category=" ادارة معالجة الأعمال" data-search="ادارة معالجة الأعمال"><div class="booktop"><div class="cover">💻</div><span class="tag">نظم المعلومات الإدارية</span></div><h3>المحاضره الأولى</h3><p>مفهوم اداء سير العمل</p><div class="meta">إدارة معالجة الأعمال </div><a class="download" href="books/ادارة معالجة الأعمال 1.pptx" download>⬇ تحميل الكتاب</a></article>
+      <article class="book" data-category=" ادارة معالجة الأعمال" data-search="ادارة معالجة الأعمال"><div class="booktop"><div class="cover">💻</div><span class="tag">نظم المعلومات الإدارية</span></div><h3>المحاضره الثانية</h3><p>مخططات سير الأعمال</p><div class="meta">إدارة معالجة الأعمال </div><a class="download" href="books/ادارة معالجة الأعمال 2.pptx" download>⬇ تحميل الكتاب</a></article>
+    <article class="book" data-category="تنقيب البيانات" data-search="تنقيب البيانات"><div class="booktop"><div class="cover">💻</div><span class="tag">نظم المعلومات الإدارية</span></div><h3>المحاضره الأولى</h3><p>مفهوم تنقيب البيانات</p><div class="meta">تنقيب البيانات</div><a class="download" href="books/تنقيب البيانات 1.ppt" download>⬇ تحميل الكتاب</a></article>
   </section>
   <div class="empty" id="empty">لا توجد كتب تطابق البحث. جرّب كلمة أخرى.</div>
 </main>
-<footer>أضف الكتب التي تملك حق توزيعها أو التي يتيح أصحابها تنزيلها عمر محمد سليمان.</footer>
+<footer>عمر محمد سليمان</footer>
 <script>
 const search=document.getElementById('search');
 const cards=[...document.querySelectorAll('.book')];
