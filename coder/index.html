@@ -1,0 +1,689 @@
+here<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>AI Android Builder PRO FULL</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#0b1020;
+    color:#f1f5f9
+}
+
+header{
+    padding:22px;
+    background:#111827;
+    border-bottom:1px solid #293244
+}
+
+header h1{
+    margin:0 0 8px;
+    font-size:23px
+}
+
+header p{
+    color:#9ca3af;
+    margin:0
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:20px 14px
+}
+
+.panel{
+    background:#111827;
+    border:1px solid #293244;
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:18px
+}
+
+textarea,input{
+    width:100%;
+    padding:13px;
+    border-radius:9px;
+    border:1px solid #374151;
+    background:#0b1020;
+    color:white;
+    font:inherit
+}
+
+textarea{
+    min-height:130px;
+    resize:none;
+    outline:none;
+}
+
+button{
+    padding:11px 16px;
+    border:0;
+    border-radius:8px;
+    cursor:pointer;
+    font:inherit;
+    font-weight:bold
+}
+
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed
+}
+
+.primary{background:#2563eb;color:white}
+.secondary{background:#374151;color:white}
+
+.actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:12px
+}
+
+.status{
+    color:#93c5fd;
+    margin-top:12px;
+    line-height:1.8;
+    overflow-wrap:anywhere
+}
+
+.result{margin-top:20px}
+
+.result-header{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    align-items:center;
+    flex-wrap:wrap
+}
+
+pre{
+    direction:ltr;
+    text-align:left;
+    white-space:pre;
+    overflow:auto;
+    background:#030712;
+    color:#d1fae5;
+    padding:18px;
+    border-radius:10px;
+    border:1px solid #374151;
+    max-height:600px;
+    font-family:Consolas,monospace;
+    font-size:13px;
+    line-height:1.7
+}
+
+.info{
+    color:#9ca3af;
+    font-size:13px;
+    line-height:1.8
+}
+
+.suggestions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:12px
+}
+
+.suggestion{
+    border:1px solid #374151;
+    color:#cbd5e1;
+    background:#1f2937;
+    border-radius:20px;
+    padding:7px 11px;
+    cursor:pointer
+}
+
+.debug{
+    background:#0f172a;
+    border:1px solid #334155;
+    padding:12px;
+    border-radius:8px;
+    margin-top:12px;
+    line-height:1.9;
+    overflow-wrap:anywhere
+}
+
+@media(max-width:600px){
+    header h1{font-size:20px}
+    .panel{padding:14px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>عمر محمد سليمان</h1>
+ </header>
+
+<div class="container">
+
+    <div class="panel">
+        <textarea id="prompt"
+            placeholder="أكتب هنا"></textarea>
+
+        <div class="suggestions" id="suggestions"></div>
+
+        <div class="actions">
+
+            <button class="primary" id="sendBtn">
+                إرسال وتوليد الكود
+            </button>
+
+            <button class="secondary" id="clearBtn">
+                مسح
+            </button>
+
+        </div>
+
+        <div class="status" id="status"></div>
+
+    </div>
+
+    <div class="panel result" id="resultPanel" hidden>
+
+        <div class="result-header">
+
+            <div>
+                <h2 id="resultTitle">الكود الناتج</h2>
+                <p class="info" id="resultInfo"></p>
+            </div>
+
+            <button class="primary" id="copyBtn">
+                نسخ الكود
+            </button>
+
+        </div>
+
+        <div class="debug" id="debugInfo"></div>
+
+        <pre><code id="codeOutput"></code></pre>
+
+    </div>
+
+</div>
+
+<script type="module">
+
+import { db } from "./firebase.js";
+
+import {
+    collection,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+
+const $ = id => document.getElementById(id);
+
+const templatesRef = collection(db, "code_templates");
+
+let templateCache = [];
+
+
+// الكلمات التي تشير إلى نوع العملية أو التقنية
+const stopWords = new Set([
+    "students","student","sqlite","sql","insert","delete",
+    "update","select","java","php","python","javascript",
+    "html","css","database","table","fields","field",
+    "columns","column","create","read","write","android",
+    "add","remove","edit","search","code","using","with",
+    "into","from","for","the","and","to","in","on",
+    "class","method","function","make","build","generate",
+    "أنشئ","انشاء","إنشاء","كود","إضافة","اضافة","حذف",
+    "تعديل","الطلاب","طالب","جدول","قاعدة","بيانات",
+    "بالحقول","حقول","الحقول","باستخدام","في","من",
+    "إلى","الى","لغة","برمجة","برنامج","تطبيق"
+]);
+
+
+// تطبيع النص للمقارنة
+function normalize(value) {
+    return String(value || "")
+        .toLowerCase()
+        .replace(/[أإآ]/g, "ا")
+        .replace(/ى/g, "ي")
+        .replace(/[^\p{L}\p{N}_]+/gu, " ")
+        .trim();
+}
+
+
+// تقسيم النص إلى كلمات
+function tokenize(value) {
+    return normalize(value).split(/\s+/).filter(Boolean);
+}
+
+
+// تحويل قائمة مفصولة بفواصل أو أسطر
+function parseList(value) {
+    return [...new Set(
+        String(value || "")
+            .split(/[,\n،]+/)
+            .map(x => x.trim())
+            .filter(Boolean)
+    )];
+}
+
+
+// التحقق من صحة اسم الحقل
+function validIdentifier(value) {
+    const field = String(value || "").trim();
+
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(field)) {
+        return false;
+    }
+
+    const reserved = new Set([
+        "class","function","return","var","let","const",
+        "new","delete","default","if","else","for","while",
+        "switch","case","break","continue","this","super",
+        "extends","implements","interface","package","public",
+        "private","protected","static","void","int","float",
+        "double","boolean","null","true","false","undefined",
+        "import","export","try","catch","throw","throws",
+        "final","abstract","enum","instanceof","native",
+        "synchronized","transient","volatile","assert"
+    ]);
+
+    return !reserved.has(field.toLowerCase());
+}
+
+
+// استخراج الحقول من صيغة صريحة
+function extractExplicitFields(prompt) {
+
+    const patterns = [
+        /(?:fields?|columns?)\s*[:：=]\s*([a-zA-Z_][a-zA-Z0-9_]*(?:\s*[,،\s]+\s*[a-zA-Z_][a-zA-Z0-9_]*)*)/i,
+
+        /(?:الحقول|حقول|الأعمدة|اعمدة)\s*[:：=]\s*([a-zA-Z_][a-zA-Z0-9_]*(?:\s*[,،\s]+\s*[a-zA-Z_][a-zA-Z0-9_]*)*)/i,
+
+        /(?:بالحقول|بحقول)\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\s*[,،\s]+\s*[a-zA-Z_][a-zA-Z0-9_]*)*)/i
+    ];
+
+    for (const pattern of patterns) {
+
+        const match = prompt.match(pattern);
+
+        if (match && match[1]) {
+
+            const fields = match[1]
+                .split(/[,\s،]+/)
+                .map(x => x.trim())
+                .filter(validIdentifier);
+
+            if (fields.length) {
+                return [...new Set(fields)].slice(0, 50);
+            }
+        }
+    }
+
+    return [];
+}
+
+
+// استخراج الحقول من بداية الطلب غير المنسق
+function extractLeadingFields(prompt) {
+
+    const tokens = String(prompt || "")
+        .replace(/[,،]+/g, " ")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+    const extracted = [];
+
+    for (const token of tokens) {
+
+        // تجاهل الرموز والعبارات غير المناسبة
+        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(token)) {
+            if (extracted.length) break;
+            continue;
+        }
+
+        const lower = token.toLowerCase();
+
+        // توقف عند أول كلمة تدل على نوع القالب أو العملية
+        if (stopWords.has(lower)) {
+            break;
+        }
+
+        if (validIdentifier(token)) {
+            extracted.push(token);
+        }
+    }
+
+    return [...new Set(extracted)].slice(0, 50);
+}
+
+
+// استخراج الحقول من الطلب
+function extractFields(prompt, defaultFields = []) {
+
+    // الأولوية للحقول المكتوبة بصيغة واضحة
+    const explicit = extractExplicitFields(prompt);
+
+    if (explicit.length) {
+        return {
+            fields: explicit,
+            source: "الحقول المستخرجة من صيغة صريحة"
+        };
+    }
+
+    // دعم: name age studid students sqlite insert java
+    const leading = extractLeadingFields(prompt);
+
+    if (leading.length) {
+        return {
+            fields: leading,
+            source: "الحقول المستخرجة من بداية الطلب"
+        };
+    }
+
+    // استخدام الافتراضية فقط عند عدم العثور على حقول
+    const validDefaults = [...new Set(
+        (Array.isArray(defaultFields) ? defaultFields : [])
+            .filter(validIdentifier)
+    )];
+
+    return {
+        fields: validDefaults,
+        source: "الحقول الافتراضية للقالب"
+    };
+}
+
+
+// حساب مدى تطابق القالب مع الطلب
+function scoreTemplate(item, prompt) {
+
+    const words = new Set(tokenize(prompt));
+    const normalizedPrompt = normalize(prompt);
+
+    const keywords = Array.isArray(item.keywords)
+        ? item.keywords
+        : [];
+
+    let score = 0;
+
+    for (const keyword of keywords) {
+
+        const normalizedKeyword = normalize(keyword);
+
+        if (!normalizedKeyword) continue;
+
+        if (words.has(normalizedKeyword)) {
+            score += 5;
+        } else if (normalizedPrompt.includes(normalizedKeyword)) {
+            score += 3;
+        }
+    }
+
+    for (const word of tokenize(item.title || "")) {
+        if (words.has(word)) score += 2;
+    }
+
+    const language = normalize(item.language || "");
+
+    if (language && words.has(language)) {
+        score += 3;
+    }
+
+    return score;
+}
+
+
+// اختيار القالب الأفضل
+function findBestTemplate(prompt) {
+
+    const ranked = templateCache
+        .map(item => ({
+            item,
+            score: scoreTemplate(item, prompt)
+        }))
+        .sort((a, b) => b.score - a.score);
+
+    if (!ranked.length || ranked[0].score <= 0) {
+        return null;
+    }
+
+    return ranked[0].item;
+}
+
+
+// توليد أجزاء القالب باستخدام map()
+function renderTemplate(template, fields) {
+
+    let output = String(template || "");
+
+    const loopPattern = /{{#fields}}([\s\S]*?){{\/fields}}/g;
+
+    output = output.replace(loopPattern, (wholeMatch, loopBody) => {
+
+        return fields.map((field, index) => {
+
+            let row = loopBody;
+
+            row = row.replace(/{{field}}/g, field);
+            row = row.replace(/{{index}}/g, String(index));
+
+            row = row.replace(
+                /{{comma}}/g,
+                index < fields.length - 1 ? "," : ""
+            );
+
+            return row;
+
+        }).join("");
+    });
+
+    output = output.replace(
+        /{{FIELDS_CSV}}/g,
+        fields.join(", ")
+    );
+
+    output = output.replace(
+        /{{FIELDS_QUOTED}}/g,
+        fields.map(field => `'${field}'`).join(", ")
+    );
+
+    // إظهار المتغيرات التي لم يتعرف عليها المحرك
+    return output;
+}
+
+
+// تحميل القوالب
+async function loadTemplates() {
+
+    $("status").textContent = "جارٍ تحميل القوالب من Firebase...";
+
+    try {
+
+        const snapshot = await getDocs(templatesRef);
+
+        templateCache = snapshot.docs.map(d => ({
+            id: d.id,
+            ...d.data()
+        }));
+
+        $("status").textContent =
+            `تم تحميل ${templateCache.length} قالبًا من Firebase.`;
+
+        renderSuggestions();
+
+    } catch (error) {
+
+        console.error("Firebase load error:", error);
+
+        $("status").textContent =
+            "فشل تحميل القوالب: " +
+            (error.code || "") + " " +
+            (error.message || "");
+
+    }
+}
+
+
+// عرض اقتراحات البحث
+function renderSuggestions() {
+
+    const container = $("suggestions");
+    container.replaceChildren();
+
+    const words = new Set();
+
+    templateCache.forEach(item => {
+        (item.keywords || []).forEach(keyword => words.add(keyword));
+    });
+
+    [...words].slice(0, 12).forEach(keyword => {
+
+        const button = document.createElement("button");
+
+        button.className = "suggestion";
+        button.textContent = keyword;
+
+        button.addEventListener("click", () => {
+
+            $("prompt").value +=
+                ($("prompt").value ? " " : "") + keyword;
+
+        });
+
+        container.appendChild(button);
+    });
+}
+
+
+// توليد الكود
+async function sendPrompt() {
+
+    const prompt = $("prompt").value.trim();
+
+    if (!prompt) {
+        $("status").textContent = "اكتب طلبك أولًا.";
+        return;
+    }
+
+    $("sendBtn").disabled = true;
+
+    try {
+
+        if (!templateCache.length) {
+            await loadTemplates();
+        }
+
+        if (!templateCache.length) {
+            $("status").textContent =
+                "لا توجد قوالب محملة. تحقق من Firestore.";
+            return;
+        }
+
+        $("status").textContent = "جارٍ البحث عن القالب المناسب...";
+
+        const selected = findBestTemplate(prompt);
+
+        if (!selected) {
+            $("status").textContent =
+                "لم يتم العثور على قالب مناسب. أضف كلمات البحث المناسبة في صفحة الإدارة.";
+            $("resultPanel").hidden = true;
+            return;
+        }
+
+        const extracted = extractFields(
+            prompt,
+            selected.defaultFields || []
+        );
+
+        const fields = extracted.fields;
+
+        const generatedCode = renderTemplate(
+            selected.template,
+            fields
+        );
+
+        $("resultTitle").textContent =
+            selected.title || "الكود الناتج";
+
+        $("resultInfo").textContent =
+            `القالب: ${selected.title || ""} | ` +
+            `اللغة: ${selected.language || ""}`;
+
+        $("debugInfo").textContent =
+            `الحقول المستخرجة: ${fields.join(", ") || "لا توجد"}\n` +
+            `مصدر الحقول: ${extracted.source}\n` +
+            `القالب المختار: ${selected.title || ""}`;
+
+        $("codeOutput").textContent = generatedCode;
+
+        $("resultPanel").hidden = false;
+
+        $("status").textContent =
+            "تم توليد الكود باستخدام القالب المختار.";
+
+    } catch (error) {
+
+        console.error("Generation error:", error);
+
+        $("status").textContent =
+            "حدث خطأ أثناء التوليد: " +
+            (error.message || "خطأ غير معروف");
+
+    } finally {
+
+        $("sendBtn").disabled = false;
+
+    }
+}
+
+
+// زر التوليد
+$("sendBtn").addEventListener("click", sendPrompt);
+
+
+// نسخ الكود
+$("copyBtn").addEventListener("click", async () => {
+
+    try {
+
+        await navigator.clipboard.writeText(
+            $("codeOutput").textContent
+        );
+
+        $("copyBtn").textContent = "تم النسخ";
+
+        setTimeout(() => {
+            $("copyBtn").textContent = "نسخ الكود";
+        }, 1500);
+
+    } catch {
+
+        alert("تعذر النسخ تلقائيًا. انسخ الكود يدويًا.");
+
+    }
+});
+
+
+// مسح
+$("clearBtn").addEventListener("click", () => {
+
+    $("prompt").value = "";
+    $("codeOutput").textContent = "";
+    $("resultPanel").hidden = true;
+    $("status").textContent = "";
+
+});
+
+
+// تشغيل الصفحة
+await loadTemplates();
+
+</script>
+
+</body>
+  </html>
