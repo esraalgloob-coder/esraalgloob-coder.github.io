@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>إدارة قوالب الأكواد | AI Builder PRO</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f3f5f9;
+    color:#172033
+}
+
+header{
+    background:#111827;
+    color:#fff;
+    padding:22px
+}
+
+header h1{
+    margin:0 0 8px;
+    font-size:24px
+}
+
+header p{
+    margin:0;
+    color:#cbd5e1
+}
+
+.container{
+    max-width:1200px;
+    margin:25px auto;
+    padding:0 15px
+}
+
+.card{
+    background:#fff;
+    border-radius:14px;
+    padding:22px;
+    margin-bottom:20px;
+    box-shadow:0 4px 18px #00000008
+}
+
+h2{
+    margin-top:0;
+    font-size:20px
+}
+
+label{
+    display:block;
+    margin:14px 0 7px;
+    font-weight:bold
+}
+
+input,select,textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #d8deea;
+    border-radius:8px;
+    font:inherit;
+    background:#fff
+}
+
+textarea{
+    min-height:90px;
+    resize:vertical
+}
+
+#template{
+    min-height:340px;
+    direction:ltr;
+    text-align:left;
+    font-family:Consolas,monospace;
+    font-size:14px;
+    white-space:pre;
+    tab-size:4
+}
+
+button{
+    border:0;
+    border-radius:8px;
+    padding:11px 17px;
+    cursor:pointer;
+    font:inherit;
+    font-weight:bold
+}
+
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed
+}
+
+.primary{background:#2563eb;color:#fff}
+.secondary{background:#e5e7eb;color:#111827}
+.danger{background:#fee2e2;color:#991b1b}
+.success{background:#dcfce7;color:#166534}
+
+.actions{
+    display:flex;
+    gap:9px;
+    flex-wrap:wrap;
+    margin-top:18px
+}
+
+.message{
+    padding:12px;
+    margin-top:15px;
+    border-radius:8px;
+    display:none;
+    overflow-wrap:anywhere;
+    line-height:1.8
+}
+
+.message.success{
+    display:block;
+    background:#dcfce7;
+    color:#166534
+}
+
+.message.danger{
+    display:block;
+    background:#fee2e2;
+    color:#991b1b
+}
+
+.template-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+    gap:15px
+}
+
+.template-item{
+    border:1px solid #e5e7eb;
+    border-radius:10px;
+    padding:15px;
+    min-width:0;
+    overflow-wrap:anywhere
+}
+
+.template-item h3{margin-top:0}
+
+.badge{
+    display:inline-block;
+    background:#dbeafe;
+    color:#1d4ed8;
+    border-radius:5px;
+    padding:5px 8px;
+    font-size:12px
+}
+
+.small{
+    color:#64748b;
+    font-size:13px;
+    overflow-wrap:anywhere;
+    line-height:1.8
+}
+
+.help{
+    background:#eff6ff;
+    border-right:4px solid #2563eb;
+    padding:13px;
+    line-height:2;
+    overflow-wrap:anywhere
+}
+
+code{
+    direction:ltr;
+    display:inline-block;
+    background:#e2e8f0;
+    padding:2px 5px;
+    border-radius:4px
+}
+
+hr{
+    border:0;
+    border-top:1px solid #e5e7eb;
+    margin:22px 0
+}
+
+@media(max-width:600px){
+    header h1{font-size:20px}
+    .card{padding:15px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>منشىء الأكواد</h1>
+   </header>
+
+<div class="container">
+
+    <!-- تسجيل الدخول -->
+    <div class="card" id="loginCard">
+
+        <h2>تسجيل دخول </h2>
+
+     
+
+        <form id="loginForm">
+
+            <label for="email">البريد الإلكتروني</label>
+            <input
+                type="email"
+                id="email"
+                autocomplete="username"
+                required
+            >
+
+            <label for="password">كلمة المرور</label>
+            <input
+                type="password"
+                id="password"
+                autocomplete="current-password"
+                required
+            >
+
+            <div class="actions">
+                <button class="primary" id="loginBtn" type="submit">
+                    تسجيل الدخول
+                </button>
+            </div>
+
+        </form>
+
+        <div id="loginMessage" class="message"></div>
+    </div>
+
+    <!-- لوحة الإدارة -->
+    <div id="adminArea" hidden>
+
+        <div class="card">
+
+            <h2 id="formTitle">إضافة قالب جديد</h2>
+
+            <div class="help">
+                <strong>متغيرات القالب:</strong><br>
+
+                <code>{{#fields}}</code>
+                بداية تكرار جزء الكود لكل حقل.<br>
+
+                <code>{{field}}</code>
+                اسم الحقل الحالي.<br>
+
+                <code>{{index}}</code>
+                رقم الحقل بدءًا من الصفر.<br>
+
+                <code>{{comma}}</code>
+                فاصلة بعد الحقل، باستثناء الحقل الأخير.<br>
+
+                <code>{{/fields}}</code>
+                نهاية التكرار.<br>
+
+                <code>{{FIELDS_CSV}}</code>
+                أسماء الحقول مفصولة بفواصل.<br>
+
+                <code>{{FIELDS_QUOTED}}</code>
+                أسماء الحقول بين علامتي اقتباس.<br>
+
+                مثال للحقول:
+                <code>name, age, studid</code>
+            </div>
+
+            <form id="templateForm">
+
+                <input type="hidden" id="docId">
+
+                <label for="title">اسم القالب</label>
+                <input
+                    id="title"
+                    required
+                    placeholder="مثال: Java SQLite Insert Students"
+                >
+
+                <label for="language">لغة البرمجة</label>
+                <input
+                    id="language"
+                    required
+                    list="languages"
+                    placeholder="Java"
+                >
+
+                <datalist id="languages">
+                    <option value="PHP">
+                    <option value="Java">
+                    <option value="JavaScript">
+                    <option value="Python">
+                    <option value="HTML">
+                    <option value="CSS">
+                    <option value="SQL">
+                    <option value="C++">
+                    <option value="C#">
+                    <option value="Dart">
+                    <option value="XML">
+                    <option value="JSON">
+                </datalist>
+
+                <label for="keywords">كلمات البحث</label>
+                <input
+                    id="keywords"
+                    required
+                    placeholder="java, sqlite, insert, students"
+                >
+
+                <label for="defaultFields">الحقول الافتراضية</label>
+                <input
+                    id="defaultFields"
+                    placeholder="name, age"
+                >
+
+                <label for="description">وصف القالب</label>
+                <textarea
+                    id="description"
+                    placeholder="وظيفة هذا القالب..."
+                ></textarea>
+
+                <label for="template">قالب الكود البرمجي</label>
+                <textarea
+                    id="template"
+                    required
+                    spellcheck="false"
+                    placeholder="اكتب الكود البرمجي هنا..."
+                ></textarea>
+
+                <div class="actions">
+
+                    <button class="primary" type="submit" id="saveBtn">
+                        حفظ القالب
+                    </button>
+
+                    <button class="secondary" type="button" id="exampleBtn">
+                        تحميل مثال Java SQLite
+                    </button>
+
+                    <button class="secondary" type="button" id="newBtn">
+                        قالب جديد
+                    </button>
+
+                    <button class="secondary" type="button" id="refreshBtn">
+                        تحديث القائمة
+                    </button>
+
+                    <button class="danger" type="button" id="logoutBtn">
+                        تسجيل الخروج
+                    </button>
+
+                </div>
+
+                <div id="saveMessage" class="message"></div>
+
+            </form>
+
+        </div>
+
+        <div class="card">
+
+            <h2>القوالب المحفوظة</h2>
+
+            <div id="templateList" class="template-list">
+                سجّل الدخول لتحميل القوالب.
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script type="module">
+
+import {
+    db,
+    auth,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+} from "./firebase.js";
+
+import {
+    collection,
+    addDoc,
+    getDocs,
+    doc,
+    updateDoc,
+    deleteDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+
+const $ = id => document.getElementById(id);
+
+const templatesRef = collection(db, "code_templates");
+
+let currentUser = null;
+let loadingTemplates = false;
+
+
+// عرض رسالة آمنة
+function showMessage(element, message, type = "success") {
+
+    element.textContent = message;
+    element.className = "message " + type;
+
+}
+
+
+// تحويل قائمة مفصولة بفواصل أو أسطر إلى مصفوفة
+function parseList(value) {
+
+    return [...new Set(
+        String(value || "")
+            .split(/[,\n،]+/)
+            .map(item => item.trim())
+            .filter(Boolean)
+    )];
+
+}
+
+
+// نموذج مثال Java SQLite
+const javaSQLiteExample = {
+    title: "Java SQLite Insert Students",
+    language: "Java",
+    keywords: [
+        "java",
+        "sqlite",
+        "insert",
+        "students",
+        "student",
+        "database",
+        "إضافة",
+        "طلاب"
+    ],
+    defaultFields: [
+        "name",
+        "age"
+    ],
+    description:
+        "إنشاء ContentValues لإدخال الحقول المحددة في جدول students باستخدام SQLite في Java.",
+    template:
+`ContentValues values = new ContentValues();
+
+{{#fields}}
+values.put("{{field}}", {{field}});
+{{/fields}}
+
+long result = db.insert("students", null, values);
+
+if (result == -1) {
+    // فشل الإدخال
+} else {
+    // تم الإدخال بنجاح
+}`
+};
+
+
+// تحميل المثال في النموذج فقط
+$("exampleBtn").addEventListener("click", () => {
+
+    $("docId").value = "";
+    $("title").value = javaSQLiteExample.title;
+    $("language").value = javaSQLiteExample.language;
+    $("keywords").value = javaSQLiteExample.keywords.join(", ");
+    $("defaultFields").value =
+        javaSQLiteExample.defaultFields.join(", ");
+    $("description").value = javaSQLiteExample.description;
+    $("template").value = javaSQLiteExample.template;
+
+    $("formTitle").textContent = "إضافة مثال Java SQLite";
+
+    showMessage(
+        $("saveMessage"),
+        "تم تحميل المثال في النموذج. اضغط حفظ القالب لإضافته إلى Firebase.",
+        "success"
+    );
+
+});
+
+
+// تسجيل الدخول
+$("loginForm").addEventListener("submit", async event => {
+
+    event.preventDefault();
+
+    const email = $("email").value.trim();
+    const password = $("password").value;
+
+    if (!email || !password) {
+        showMessage(
+            $("loginMessage"),
+            "أدخل البريد الإلكتروني وكلمة المرور.",
+            "danger"
+        );
+        return;
+    }
+
+    $("loginBtn").disabled = true;
+
+    try {
+
+        await signInWithEmailAndPassword(auth, email, password);
+
+        showMessage(
+            $("loginMessage"),
+            "تم تسجيل الدخول بنجاح.",
+            "success"
+        );
+
+    } catch (error) {
+
+        console.error("Login error:", error);
+
+        showMessage(
+            $("loginMessage"),
+            "فشل تسجيل الدخول: " +
+            (error.code || "") + " — " +
+            (error.message || "خطأ غير معروف"),
+            "danger"
+        );
+
+    } finally {
+
+        $("loginBtn").disabled = false;
+
+    }
+
+});
+
+
+// مراقبة حالة تسجيل الدخول
+onAuthStateChanged(auth, async user => {
+
+    currentUser = user;
+
+    $("loginCard").hidden = !!user;
+    $("adminArea").hidden = !user;
+
+    if (user) {
+
+        await loadTemplates();
+
+    } else {
+
+        $("templateList").textContent = "سجّل الدخول لتحميل القوالب.";
+
+    }
+
+});
+
+
+// حفظ قالب أو تعديله
+$("templateForm").addEventListener("submit", async event => {
+
+    event.preventDefault();
+
+    if (!currentUser) {
+
+        showMessage(
+            $("saveMessage"),
+            "يجب تسجيل الدخول أولًا.",
+            "danger"
+        );
+
+        return;
+
+    }
+
+    const title = $("title").value.trim();
+    const language = $("language").value.trim();
+    const keywords = parseList($("keywords").value);
+    const defaultFields = parseList($("defaultFields").value);
+    const description = $("description").value.trim();
+    const template = $("template").value;
+    const docId = $("docId").value.trim();
+
+    if (!title || !language || keywords.length === 0 || !template.trim()) {
+
+        showMessage(
+            $("saveMessage"),
+            "أكمل اسم القالب واللغة وكلمات البحث والكود.",
+            "danger"
+        );
+
+        return;
+
+    }
+
+    const data = {
+        title,
+        language,
+        keywords,
+        defaultFields,
+        description,
+        template,
+        updatedAt: serverTimestamp()
+    };
+
+    $("saveBtn").disabled = true;
+
+    try {
+
+        if (docId) {
+
+            await updateDoc(
+                doc(db, "code_templates", docId),
+                data
+            );
+
+            showMessage(
+                $("saveMessage"),
+                "تم تعديل القالب بنجاح.",
+                "success"
+            );
+
+        } else {
+
+            data.createdAt = serverTimestamp();
+
+            const created = await addDoc(templatesRef, data);
+
+            showMessage(
+                $("saveMessage"),
+                "تم حفظ القالب بنجاح. رقم المستند: " + created.id,
+                "success"
+            );
+
+        }
+
+        resetForm();
+        await loadTemplates();
+
+    } catch (error) {
+
+        console.error("Firebase Save Error:", error);
+
+        showMessage(
+            $("saveMessage"),
+            "فشل الحفظ.\n" +
+            "رمز الخطأ: " + (error.code || "غير متوفر") +
+            "\nالتفاصيل: " + (error.message || "خطأ غير معروف"),
+            "danger"
+        );
+
+    } finally {
+
+        $("saveBtn").disabled = false;
+
+    }
+
+});
+
+
+// تفريغ النموذج
+function resetForm() {
+
+    $("templateForm").reset();
+    $("docId").value = "";
+    $("formTitle").textContent = "إضافة قالب جديد";
+
+}
+
+
+// زر قالب جديد
+$("newBtn").addEventListener("click", () => {
+
+    resetForm();
+
+    $("saveMessage").style.display = "none";
+
+});
+
+
+// تحميل القوالب
+async function loadTemplates() {
+
+    if (!currentUser || loadingTemplates) {
+        return;
+    }
+
+    loadingTemplates = true;
+
+    $("refreshBtn").disabled = true;
+    $("templateList").textContent = "جارٍ تحميل القوالب...";
+
+    try {
+
+        const snapshot = await getDocs(templatesRef);
+
+        $("templateList").replaceChildren();
+
+        if (snapshot.empty) {
+
+            $("templateList").textContent =
+                "لا توجد قوالب محفوظة حتى الآن.";
+
+            return;
+
+        }
+
+        snapshot.forEach(documentSnapshot => {
+
+            const item = documentSnapshot.data();
+
+            const box = document.createElement("div");
+            box.className = "template-item";
+
+            const heading = document.createElement("h3");
+            heading.textContent = item.title || "بدون عنوان";
+
+            const badge = document.createElement("span");
+            badge.className = "badge";
+            badge.textContent = item.language || "غير محددة";
+
+            const description = document.createElement("p");
+            description.className = "small";
+            description.textContent = item.description || "لا يوجد وصف.";
+
+            const keywords = document.createElement("p");
+            keywords.className = "small";
+            keywords.textContent =
+                "كلمات البحث: " +
+                (Array.isArray(item.keywords)
+                    ? item.keywords.join(", ")
+                    : "");
+
+            const fields = document.createElement("p");
+            fields.className = "small";
+            fields.textContent =
+                "الحقول الافتراضية: " +
+                (Array.isArray(item.defaultFields)
+                    ? item.defaultFields.join(", ")
+                    : "");
+
+            const editButton = document.createElement("button");
+            editButton.className = "secondary";
+            editButton.textContent = "تعديل";
+
+            editButton.addEventListener("click", () => {
+
+                $("docId").value = documentSnapshot.id;
+                $("title").value = item.title || "";
+                $("language").value = item.language || "";
+
+                $("keywords").value =
+                    Array.isArray(item.keywords)
+                        ? item.keywords.join(", ")
+                        : "";
+
+                $("defaultFields").value =
+                    Array.isArray(item.defaultFields)
+                        ? item.defaultFields.join(", ")
+                        : "";
+
+                $("description").value = item.description || "";
+                $("template").value = item.template || "";
+
+                $("formTitle").textContent = "تعديل القالب";
+
+                $("saveMessage").style.display = "none";
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+
+            });
+
+            const deleteButton = document.createElement("button");
+            deleteButton.className = "danger";
+            deleteButton.textContent = "حذف";
+
+            deleteButton.addEventListener("click", async () => {
+
+                if (!currentUser) {
+
+                    alert("يجب تسجيل الدخول أولًا.");
+                    return;
+
+                }
+
+                if (!confirm("هل تريد حذف القالب: " + (item.title || "") + "؟")) {
+                    return;
+                }
+
+                deleteButton.disabled = true;
+
+                try {
+
+                    await deleteDoc(
+                        doc(db, "code_templates", documentSnapshot.id)
+                    );
+
+                    await loadTemplates();
+
+                } catch (error) {
+
+                    console.error("Firebase Delete Error:", error);
+
+                    alert(
+                        "فشل الحذف.\n" +
+                        "رمز الخطأ: " + (error.code || "") +
+                        "\nالتفاصيل: " + (error.message || "")
+                    );
+
+                    deleteButton.disabled = false;
+
+                }
+
+            });
+
+            const actions = document.createElement("div");
+            actions.className = "actions";
+            actions.append(editButton, deleteButton);
+
+            box.append(
+                heading,
+                badge,
+                description,
+                keywords,
+                fields,
+                actions
+            );
+
+            $("templateList").appendChild(box);
+
+        });
+
+    } catch (error) {
+
+        console.error("Firebase Load Error:", error);
+
+        $("templateList").textContent =
+            "فشل تحميل القوالب. رمز الخطأ: " +
+            (error.code || "غير متوفر") +
+            " — " +
+            (error.message || "خطأ غير معروف");
+
+    } finally {
+
+        loadingTemplates = false;
+        $("refreshBtn").disabled = false;
+
+    }
+
+}
+
+
+// تحديث القائمة
+$("refreshBtn").addEventListener("click", loadTemplates);
+
+
+// تسجيل الخروج
+$("logoutBtn").addEventListener("click", async () => {
+
+    try {
+
+        await signOut(auth);
+        resetForm();
+
+    } catch (error) {
+
+        console.error("Logout error:", error);
+
+        alert("تعذر تسجيل الخروج: " + (error.message || ""));
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
