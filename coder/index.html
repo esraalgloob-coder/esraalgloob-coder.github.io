@@ -1,4 +1,4 @@
-here<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -296,41 +296,57 @@ function validIdentifier(value) {
 }
 
 
-// استخراج الحقول من صيغة صريحة
-function extractExplicitFields(prompt) {
+// كلمات توقف عند الوصول إلى وصف العملية بعد أسماء الحقول
+const fieldStopWords = new Set([
+    ...stopWords,
+    "to", "into", "from", "using", "where", "that", "which",
+    "أضف", "اضف", "إضافة", "اضافة", "مع", "الى", "إلى",
+    "في", "على", "داخل", "لجدول", "جدول", "باستخدام", "ويكون", "تكون"
+]);
 
-    const patterns = [
-        /(?:fields?|columns?)\s*[:：=]\s*([a-zA-Z_][a-zA-Z0-9_]*(?:\s*[,،\s]+\s*[a-zA-Z_][a-zA-Z0-9_]*)*)/i,
+// تحويل أسماء الحقول إلى قائمة صالحة
+function cleanFieldNames(values) {
+    const result = [];
+    const seen = new Set();
 
-        /(?:الحقول|حقول|الأعمدة|اعمدة)\s*[:：=]\s*([a-zA-Z_][a-zA-Z0-9_]*(?:\s*[,،\s]+\s*[a-zA-Z_][a-zA-Z0-9_]*)*)/i,
-
-        /(?:بالحقول|بحقول)\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\s*[,،\s]+\s*[a-zA-Z_][a-zA-Z0-9_]*)*)/i
-    ];
-
-    for (const pattern of patterns) {
-
-        const match = prompt.match(pattern);
-
-        if (match && match[1]) {
-
-            const fields = match[1]
-                .split(/[,\s،]+/)
-                .map(x => x.trim())
-                .filter(validIdentifier);
-
-            if (fields.length) {
-                return [...new Set(fields)].slice(0, 50);
-            }
+    values.forEach(value => {
+        const field = String(value || "").trim().replace(/^[`"']|[`"']$/g, "");
+        const key = field.toLowerCase();
+        if (validIdentifier(field) && !seen.has(key)) {
+            seen.add(key);
+            result.push(field);
         }
-    }
-
-    return [];
+    });
+    return result;
 }
 
+// استخراج الحقول من بعد كلمات دالة، سواء بوجود نقطتين أو بدونها
+function extractExplicitFields(prompt) {
+    const marker = /(?:\bfields?\b|\bcolumns?\b|الحقول|حقول|الأعمدة|اعمدة|بالحقول|بحقول)\s*[:：=]?\s*/i;
+    const match = String(prompt || "").match(marker);
+    if (!match) return [];
 
-// استخراج الحقول من بداية الطلب غير المنسق
+    const tail = String(prompt).slice(match.index + match[0].length);
+    // الفاصلة المنقوطة أو السطر الجديد ينهيان قائمة الحقول بوضوح
+    const section = tail.split(/[;؛\n]/, 1)[0];
+    const tokens = section.split(/[\s,،]+/).filter(Boolean);
+    const fields = [];
+
+    for (const raw of tokens) {
+        const token = raw.replace(/^[`"'([{]+|[`"')\]}]+$/g, "");
+        if (!token) continue;
+        const normalized = normalize(token);
+        if (fieldStopWords.has(normalized)) break;
+        if (validIdentifier(token)) fields.push(token);
+        // تجاهل الكلمات العربية وعلامات الترقيم، لكن لا نسمح بالاستمرار
+        // بعد بدء وصف عربي لاحق لقائمة الحقول.
+        else if (/\p{Script=Arabic}/u.test(token)) break;
+    }
+    return cleanFieldNames(fields).slice(0, 50);
+}
+
+// استخراج الحقول المكتوبة في بداية الطلب دون صيغة fields:
 function extractLeadingFields(prompt) {
-
     const tokens = String(prompt || "")
         .replace(/[,،]+/g, " ")
         .trim()
@@ -338,63 +354,43 @@ function extractLeadingFields(prompt) {
         .filter(Boolean);
 
     const extracted = [];
+    let started = false;
 
-    for (const token of tokens) {
-
-        // تجاهل الرموز والعبارات غير المناسبة
-        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(token)) {
-            if (extracted.length) break;
+    for (const raw of tokens) {
+        const token = raw.replace(/^[`"'([{]+|[`"')\]}]+$/g, "");
+        const normalized = normalize(token);
+        if (!token) continue;
+        if (fieldStopWords.has(normalized)) {
+            if (started) break;
             continue;
         }
-
-        const lower = token.toLowerCase();
-
-        // توقف عند أول كلمة تدل على نوع القالب أو العملية
-        if (stopWords.has(lower)) {
+        if (validIdentifier(token)) {
+            started = true;
+            extracted.push(token);
+        } else if (started) {
             break;
         }
-
-        if (validIdentifier(token)) {
-            extracted.push(token);
-        }
     }
-
-    return [...new Set(extracted)].slice(0, 50);
+    return cleanFieldNames(extracted).slice(0, 50);
 }
 
-
-// استخراج الحقول من الطلب
+// دمج الحقول الافتراضية مع الحقول التي يحددها المستخدم
 function extractFields(prompt, defaultFields = []) {
+    const defaults = cleanFieldNames(
+        Array.isArray(defaultFields)
+            ? defaultFields
+            : parseList(defaultFields)
+    );
 
-    // الأولوية للحقول المكتوبة بصيغة واضحة
     const explicit = extractExplicitFields(prompt);
-
-    if (explicit.length) {
-        return {
-            fields: explicit,
-            source: "الحقول المستخرجة من صيغة صريحة"
-        };
-    }
-
-    // دعم: name age studid students sqlite insert java
-    const leading = extractLeadingFields(prompt);
-
-    if (leading.length) {
-        return {
-            fields: leading,
-            source: "الحقول المستخرجة من بداية الطلب"
-        };
-    }
-
-    // استخدام الافتراضية فقط عند عدم العثور على حقول
-    const validDefaults = [...new Set(
-        (Array.isArray(defaultFields) ? defaultFields : [])
-            .filter(validIdentifier)
-    )];
+    const custom = explicit.length ? explicit : extractLeadingFields(prompt);
+    const merged = cleanFieldNames([...defaults, ...custom]).slice(0, 50);
 
     return {
-        fields: validDefaults,
-        source: "الحقول الافتراضية للقالب"
+        fields: merged,
+        source: custom.length
+            ? (defaults.length ? "الحقول الافتراضية + الحقول الجديدة" : "الحقول الجديدة")
+            : "الحقول الافتراضية للقالب"
     };
 }
 
@@ -615,7 +611,7 @@ async function sendPrompt() {
             `اللغة: ${selected.language || ""}`;
 
         $("debugInfo").textContent =
-            `الحقول المستخرجة: ${fields.join(", ") || "لا توجد"}\n` +
+            `الحقول النهائية المستخدمة: ${fields.join(", ") || "لا توجد"}\n` +
             `مصدر الحقول: ${extracted.source}\n` +
             `القالب المختار: ${selected.title || ""}`;
 
@@ -686,4 +682,4 @@ await loadTemplates();
 </script>
 
 </body>
-  </html>
+    </html>
