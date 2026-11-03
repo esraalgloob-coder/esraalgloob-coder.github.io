@@ -238,37 +238,7 @@ hr{
 
         <div class="card">
 
-            <h2 id="formTitle">إضافة قالب جديد</h2>
-
-            <div class="help">
-                <strong>متغيرات القالب:</strong><br>
-
-                <code>{{#fields}}</code>
-                بداية تكرار جزء الكود لكل حقل.<br>
-
-                <code>{{field}}</code>
-                اسم الحقل الحالي.<br>
-
-                <code>{{index}}</code>
-                رقم الحقل بدءًا من الصفر.<br>
-
-                <code>{{comma}}</code>
-                فاصلة بعد الحقل، باستثناء الحقل الأخير.<br>
-
-                <code>{{/fields}}</code>
-                نهاية التكرار.<br>
-
-                <code>{{FIELDS_CSV}}</code>
-                أسماء الحقول مفصولة بفواصل.<br>
-
-                <code>{{FIELDS_QUOTED}}</code>
-                أسماء الحقول بين علامتي اقتباس.<br>
-
-                مثال للحقول:
-                <code>name, age, studid</code>
-            </div>
-
-            <form id="templateForm">
+           <form id="templateForm">
 
                 <input type="hidden" id="docId">
 
@@ -276,7 +246,6 @@ hr{
                 <input
                     id="title"
                     required
-                    placeholder="مثال: Java SQLite Insert Students"
                 >
 
                 <label for="language">لغة البرمجة</label>
@@ -306,19 +275,18 @@ hr{
                 <input
                     id="keywords"
                     required
-                    placeholder="java, sqlite, insert, students"
-                >
+                    > 
 
                 <label for="defaultFields">الحقول الافتراضية</label>
                 <input
                     id="defaultFields"
-                    placeholder="name, age"
+                    
                 >
 
                 <label for="description">وصف القالب</label>
                 <textarea
                     id="description"
-                    placeholder="وظيفة هذا القالب..."
+                
                 ></textarea>
 
                 <label for="template">قالب الكود البرمجي</label>
@@ -326,7 +294,7 @@ hr{
                     id="template"
                     required
                     spellcheck="false"
-                    placeholder="اكتب الكود البرمجي هنا..."
+                    
                 ></textarea>
 
                 <div class="actions">
